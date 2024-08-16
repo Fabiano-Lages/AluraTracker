@@ -1,7 +1,7 @@
 <template>
     <div class="box formulario">
         <div class="columns">
-            <div class="column is-8" role="form" aria-label="Formulário para criação de uma nova tarefa">
+            <div class="column is-5" role="form" aria-label="Formulário para criação de uma nova tarefa">
                 <input 
                     type="text" 
                     class="input" 
@@ -9,6 +9,20 @@
                     placeholder="Qual tarefa você deseja iniciar?" 
                     :readonly="executando" 
                 />
+            </div>
+            <div class="column is-3">
+                <div class="select">
+                    <select name="drop" id="drop" v-model="idProjeto">
+                        <option value="">Selecione o projeto</option>
+                        <option
+                            :value="projeto.id"
+                            v-for="projeto in lstProjetos"
+                            :key="projeto.id"
+                        >
+                            {{ projeto.nome }}
+                        </option>
+                    </select>
+                </div>
             </div>
             <div class="column">
                 <TempoRizador 
@@ -23,9 +37,10 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue';
+    import { defineComponent, computed } from 'vue';
     import TempoRizador from './TempoRizador.vue';
     import ITarefa from '@/interfaces/ITarefa';
+    import { useStore } from '@/store';
 
     export default defineComponent({
         name: 'FormularioTarefa',
@@ -35,12 +50,18 @@
         data() {
             return({
                 descricao: '',
-                executando: false
+                executando: false,
+                idProjeto: ''
             });
         },
         methods: {
             finalizarTarefa(segundos: number) : void {
-                this.$emit('tarefaFinalizada', {descricao: this.descricao, duracaoEmSegundos: segundos} as ITarefa);
+                this.$emit('tarefaFinalizada', 
+                    {
+                        descricao: this.descricao, 
+                        duracaoEmSegundos: segundos,
+                        projeto: this.lstProjetos.find(prj => prj.id == this.idProjeto)
+                    } as ITarefa);
                 this.descricao = "";
                 this.executando = false;
             },
@@ -48,14 +69,21 @@
                 this.executando = true;
             }
         },
-        emits: ['tarefaFinalizada']
+        emits: ['tarefaFinalizada'],
+        setup() {
+            const store = useStore();
+            return({
+                store,
+                lstProjetos: computed(() => store.state.projetos)
+            });
+        }
     });
 </script>
 
 <style>
-    .input {
-        color: var(--texto-primario);
-        background-color: var(--bg-primario);
+    .input, .select, select {
+        color: var(--texto-primario) !important;
+        background-color: var(--bg-primario) !important;
     }
 
     .input:read-only {

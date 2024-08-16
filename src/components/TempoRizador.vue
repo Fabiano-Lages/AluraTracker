@@ -12,6 +12,9 @@
     import { defineComponent } from 'vue';
     import MarcaTempo from './MarcaTempo.vue';
     import BotaoControle from './BotaoControle.vue';
+    import { useStore } from '@/store';
+    import { Notificacao } from '@/store/tipo-mutacoes';
+    import { TipoNotificacao } from '@/interfaces/INotificacao'; //INotificacao from '@/interfaces/INotificacao';
 
     export default defineComponent({
         name: "TempoRizador",
@@ -24,6 +27,10 @@
                 required: true
             },
             descricao: {
+                type: String,
+                default: ""
+            },
+            Projeto: {
                 type: String,
                 default: ""
             }
@@ -43,14 +50,30 @@
                     }, 1000);
                     this.$emit("aoIniciarTarefa");
                 } else {
-                    alert("Descrição obrigatória");
+                    this.store.commit(Notificacao.NOTIFICAR, {
+                        titulo: 'Descrição obrigatória',
+                        texto: 'O campo descrição deve ser preenchido para iniciar a tarefa',
+                        tipo: TipoNotificacao.FALHA
+                    });
                 }
             },
             finalizar() {
-                clearInterval(this.intervalo);
-                this.$emit('aoTempoFinalizado', this.tempoEmSegundos);
-                this.tempoEmSegundos = 0;
+                if(this.Projeto) {
+                    clearInterval(this.intervalo);
+                    this.$emit('aoTempoFinalizado', this.tempoEmSegundos);
+                    this.tempoEmSegundos = 0;
+                } else {
+                    this.store.commit(Notificacao.NOTIFICAR, {
+                        titulo: 'Projeto obrigatória',
+                        texto: 'O campo projeto deve ser preenchido para encerrar esta tarefa',
+                        tipo: TipoNotificacao.FALHA
+                    });
+                }
             }
+        },
+        setup() {
+            const store = useStore();
+            return ({ store });
         }
     });
 </script>

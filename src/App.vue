@@ -1,14 +1,11 @@
 <template>
   <main class="columns is-gapless is-multiline" :class="{'modo-escuro': modoEscuro}">
     <div class="column is-one-quarter">
-      <BarraLateral @alterarTema="alterarTema" />
+      <BarraLateral @alterarTema="alterarTema" :modoEscuro="modoEscuro" />
     </div>
     <div class="column is-three-quarter conteudo">
-      <FormularioTarefa @tarefaFinalizada="adicionaTarefa" />
-      <div class="lista" >
-        <BoxTarefa v-if="!listaTarefas.length">Nenhuma tarefa criada</BoxTarefa>
-        <TarefaDetalhe v-else v-for="(tarefa, index) in listaTarefas" :key="index" :tarefa="tarefa" />
-      </div>
+      <NotificacoesApp :modoEscuro="modoEscuro" />
+      <RouterView />
     </div>
   </main>
 </template>
@@ -16,15 +13,13 @@
 <script lang="ts">
   import { defineComponent } from 'vue';
   import BarraLateral from './components/BarraLateral.vue';
-  import FormularioTarefa from './components/FormularioTarefa.vue';
-  import BoxTarefa from './components/BoxTarefa.vue';
-  import TarefaDetalhe from './components/TarefaDetalhe.vue';
   import ITarefa from './interfaces/ITarefa';
+  import NotificacoesApp from './components/NotificacoesApp.vue';
 
   export default defineComponent({
     name: 'App',
     components: {
-      BarraLateral, FormularioTarefa, TarefaDetalhe, BoxTarefa
+      BarraLateral, NotificacoesApp
     },
     data() {
       return({
@@ -36,8 +31,8 @@
         adicionaTarefa(tarefa: ITarefa) {
           this.listaTarefas.push(tarefa);
         },
-        alterarTema(modoEscuro: boolean) {
-          this.modoEscuro = modoEscuro;
+        alterarTema() {
+          this.modoEscuro = !this.modoEscuro;
         }
     }
   });
@@ -61,9 +56,5 @@
   .conteudo {
     background-color: var(--bg-primario);
     color: var(--texto-primario);
-  }
-
-  .lista {
-      padding: 1.25rem;
   }
 </style>
