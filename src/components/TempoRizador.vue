@@ -8,19 +8,19 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
     import { defineComponent } from 'vue';
     import MarcaTempo from './MarcaTempo.vue';
     import BotaoControle from './BotaoControle.vue';
-    import { useStore } from '@/store';
-    import { Notificacao } from '@/store/tipo-mutacoes';
     import { TipoNotificacao } from '@/interfaces/INotificacao'; //INotificacao from '@/interfaces/INotificacao';
+    import { notificacaoMixin } from '@/mixins/notificar';
 
     export default defineComponent({
         name: "TempoRizador",
         components: {
             MarcaTempo, BotaoControle
         },
+        mixins: [notificacaoMixin],
         props: {
             executando:{
                 type: Boolean,
@@ -30,7 +30,7 @@
                 type: String,
                 default: ""
             },
-            Projeto: {
+            projeto: {
                 type: String,
                 default: ""
             }
@@ -38,7 +38,7 @@
         data() {
             return {
                 tempoEmSegundos: 0,
-                intervalo: null
+                intervalo: 0
             }  
         },
         emits: ['aoTempoFinalizado', 'aoIniciarTarefa'],
@@ -50,30 +50,18 @@
                     }, 1000);
                     this.$emit("aoIniciarTarefa");
                 } else {
-                    this.store.commit(Notificacao.NOTIFICAR, {
-                        titulo: 'Descrição obrigatória',
-                        texto: 'O campo descrição deve ser preenchido para iniciar a tarefa',
-                        tipo: TipoNotificacao.FALHA
-                    });
+                    this.notificar(TipoNotificacao.FALHA, 'Descrição obrigatória', 'O campo descrição deve ser preenchido para iniciar a tarefa');
                 }
             },
             finalizar() {
-                if(this.Projeto) {
+                if(this.projeto) {
                     clearInterval(this.intervalo);
                     this.$emit('aoTempoFinalizado', this.tempoEmSegundos);
                     this.tempoEmSegundos = 0;
                 } else {
-                    this.store.commit(Notificacao.NOTIFICAR, {
-                        titulo: 'Projeto obrigatória',
-                        texto: 'O campo projeto deve ser preenchido para encerrar esta tarefa',
-                        tipo: TipoNotificacao.FALHA
-                    });
+                    this.notificar(TipoNotificacao.FALHA, 'Projeto obrigatória', 'O campo projeto deve ser preenchido para encerrar esta tarefa');
                 }
             }
-        },
-        setup() {
-            const store = useStore();
-            return ({ store });
         }
     });
 </script>

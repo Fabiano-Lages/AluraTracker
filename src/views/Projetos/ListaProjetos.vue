@@ -42,6 +42,8 @@
     import { useStore } from '@/store';
     import { Projeto } from '@/store/tipo-mutacoes';
     import { defineComponent, computed } from 'vue';
+    import { TipoNotificacao } from '@/interfaces/INotificacao';
+    import useNotificar from '@/hooks/notificador';
 
     export default defineComponent({
         name: 'ListaProjetos',
@@ -49,13 +51,16 @@
             excluir(id: string) {
                 if(confirm("Confirma a exclusão do projeto?")) {
                     this.store.commit(Projeto.EXCLUI, id);
+                    this.notificar(TipoNotificacao.SUCESSO, 'Projeto excluído', 'O projeto foi excluído com sucesso! ;)');
                 }
             }
         },
         setup() {
             const store = useStore();
+            const { notificar } = useNotificar();
             return({
                 store,
+                notificar,
                 lstProjetos: computed(() => store.state.projetos)
             });
         }

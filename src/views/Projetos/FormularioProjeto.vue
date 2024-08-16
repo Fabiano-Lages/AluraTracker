@@ -18,11 +18,12 @@
         </form>
     </section>
 </template>
-
+ 
 <script lang="ts">
     import { defineComponent } from 'vue';
     import { useStore } from '@/store';
-    import { Notificacao, Projeto } from '@/store/tipo-mutacoes';
+    import { Projeto } from '@/store/tipo-mutacoes';
+    import { notificacaoMixin } from '@/mixins/notificar';
     import { TipoNotificacao } from '@/interfaces/INotificacao';
 
     export default defineComponent({
@@ -32,6 +33,7 @@
             type: String
           }  
         },
+        mixins: [notificacaoMixin],
         data() {
             return({
                 nomeDoProjeto: "",
@@ -47,11 +49,8 @@
                     this.store.commit(Projeto.ADICIONA, this.nomeDoProjeto);
                 }
                 this.nomeDoProjeto = "";
-                this.store.commit(Notificacao.NOTIFICAR, {
-                    titulo: `Projeto ${acao}`,
-                    texto: `Projeto ${acao} com sucesso! ;)`,
-                    tipo: TipoNotificacao.SUCESSO
-                });
+                this.notificar(TipoNotificacao.SUCESSO, `Projeto ${acao}`, `Projeto ${acao} com sucesso! ;)`);
+
                 this.$router.push("/projetos");
             }
         },

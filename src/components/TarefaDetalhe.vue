@@ -1,8 +1,11 @@
 <template>
     <BoxTarefa>
         <div class="columns">
-            <div class="column is-7">
+            <div class="column is-4">
                 {{ tarefa.descricao }}
+            </div>
+            <div class="column is-3">
+                {{ tarefa.projeto.nome }}
             </div>
             <div class="column">
                 <MarcaTempo :segundos="tarefa.duracaoEmSegundos" />

@@ -28,6 +28,7 @@
                 <TempoRizador 
                     :executando="executando" 
                     :descricao="descricao" 
+                    :projeto="idProjeto"
                     @aoTempoFinalizado="finalizarTarefa" 
                     @aoIniciarTarefa="iniciarTarefa" 
                 />

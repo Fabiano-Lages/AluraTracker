@@ -2,7 +2,7 @@ import IProjeto from "@/interfaces/IProjeto";
 import { InjectionKey } from "vue";
 import { createStore, Store, useStore as vuexUseStore} from "vuex";
 import { Projeto, Notificacao } from "./tipo-mutacoes";
-import { INotificacao, TipoNotificacao } from "@/interfaces/INotificacao";
+import { INotificacao } from "@/interfaces/INotificacao";
 
 interface Estado {
     projetos: IProjeto[],
