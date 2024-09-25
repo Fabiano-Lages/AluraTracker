@@ -40,24 +40,29 @@
 
 <script lang="ts">
     import { useStore } from '@/store';
-    import { Projeto } from '@/store/tipo-mutacoes';
     import { defineComponent, computed } from 'vue';
     import { TipoNotificacao } from '@/interfaces/INotificacao';
     import useNotificar from '@/hooks/notificador';
+    import { AcaoProjeto } from '@/store/tipo-acoes';
 
     export default defineComponent({
         name: 'ListaProjetos',
         methods: {
             excluir(id: string) {
                 if(confirm("Confirma a exclusão do projeto?")) {
-                    this.store.commit(Projeto.EXCLUI, id);
-                    this.notificar(TipoNotificacao.SUCESSO, 'Projeto excluído', 'O projeto foi excluído com sucesso! ;)');
+                    this.store.dispatch(AcaoProjeto.REMOVER_PROJETO, id)
+                        .then(() => {
+                            this.notificar(TipoNotificacao.SUCESSO, 'Projeto excluído', 'O projeto foi excluído com sucesso! ;)');
+                        }
+                    );
                 }
             }
         },
         setup() {
             const store = useStore();
             const { notificar } = useNotificar();
+            store.dispatch(AcaoProjeto.OBTER_PROJETOS);
+
             return({
                 store,
                 notificar,

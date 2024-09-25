@@ -22,7 +22,7 @@
 <script lang="ts">
     import { defineComponent } from 'vue';
     import { useStore } from '@/store';
-    import { Projeto } from '@/store/tipo-mutacoes';
+    import { AcaoProjeto } from '@/store/tipo-acoes';
     import { notificacaoMixin } from '@/mixins/notificar';
     import { TipoNotificacao } from '@/interfaces/INotificacao';
 
@@ -42,16 +42,22 @@
         methods: {
             salvar() {
                 let acao = "criado";
+                let promessa = null;
                 if(this.id) {
-                    this.store.commit(Projeto.ALTERA, {id: this.id, nome: this.nomeDoProjeto});
+                    promessa = this.store.dispatch(AcaoProjeto.ALTERAR_PROJETO, {id: this.id, nome: this.nomeDoProjeto});
                     acao = "alterado";
                 } else {
-                    this.store.commit(Projeto.ADICIONA, this.nomeDoProjeto);
+                    promessa = this.store.dispatch(AcaoProjeto.CADASTRAR_PROJETO, this.nomeDoProjeto);
                 }
-                this.nomeDoProjeto = "";
-                this.notificar(TipoNotificacao.SUCESSO, `Projeto ${acao}`, `Projeto ${acao} com sucesso! ;)`);
 
-                this.$router.push("/projetos");
+                if(promessa) {
+                    promessa.then(() => {
+                        this.nomeDoProjeto = "";
+                        this.notificar(TipoNotificacao.SUCESSO, `Projeto ${acao}`, `Projeto ${acao} com sucesso! ;)`);
+        
+                        this.$router.push("/projetos");
+                    });
+                }
             }
         },
         mounted() {
