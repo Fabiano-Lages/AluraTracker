@@ -54,6 +54,12 @@ export const store = createStore<Estado>({
         [Tarefa.ADICIONA](state, tarefa: ITarefa) {
             state.tarefas.push(tarefa);
         },
+        [Tarefa.ALTERA](state, tarefa: ITarefa) {
+            const pos = state.tarefas.findIndex(trf => trf.id == tarefa.id);
+            if(pos != -1) {
+                state.tarefas[pos] = tarefa;
+            }
+        },
     },
     actions: {
         [AcaoProjeto.OBTER_PROJETOS]({ commit }) {
@@ -99,7 +105,14 @@ export const store = createStore<Estado>({
                 .then(resposta => {
                     commit(Tarefa.ADICIONA, resposta.data);
                 });
-        }
+        },
+        [AcaoTarefas.ALTERAR_TAREFA]({ commit }, tarefa: ITarefa) {
+            return clienteHttp
+                .put(`tarefas/${tarefa.id}`, tarefa)
+                .then(() => {
+                    commit(Tarefa.ALTERA, tarefa);
+                });
+        },
     }
 });
 

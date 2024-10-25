@@ -1,13 +1,13 @@
 {
   "projetos": [
     {
-      "id": 1,
+      "id": "1",
       "nome": "Alura Tracker"
     }
   ],
   "tarefas": [
     {
-      "id": 1,
+      "id": "1",
       "descricao": "Estudar VueJS",
       "duracaoEmSegundos": 600,
       "projeto": {
@@ -16,11 +16,38 @@
       }
     },
     {
-      "id": 1729816509777,
-      "descricao": "Estudando VueX",
+      "id": "1729816509777",
+      "descricao": "Estudar VueX com Axios",
       "duracaoEmSegundos": 163,
       "projeto": {
         "id": 1,
+        "nome": "Alura Tracker"
+      }
+    },
+    {
+      "id": 1729863758918,
+      "descricao": "Testando",
+      "duracaoEmSegundos": 62,
+      "projeto": {
+        "id": "1",
+        "nome": "Alura Tracker"
+      }
+    },
+    {
+      "id": 1729864037706,
+      "descricao": "Outro teste",
+      "duracaoEmSegundos": 10,
+      "projeto": {
+        "id": "1",
+        "nome": "Alura Tracker"
+      }
+    },
+    {
+      "id": 1729868662758,
+      "descricao": "Testando",
+      "duracaoEmSegundos": 1337,
+      "projeto": {
+        "id": "1",
         "nome": "Alura Tracker"
       }
     }

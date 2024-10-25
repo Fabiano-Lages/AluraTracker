@@ -38,7 +38,8 @@
         data() {
             return {
                 tempoEmSegundos: 0,
-                intervalo: 0
+                intervalo: 0,
+                inicio: 0
             }  
         },
         emits: ['aoTempoFinalizado', 'aoIniciarTarefa'],
@@ -46,8 +47,10 @@
             iniciar() {
                 if(this.descricao) {
                     this.intervalo = setInterval(() => {
-                        this.tempoEmSegundos ++;
+                        const diferenca = (new Date()).getTime() - this.inicio;
+                        this.tempoEmSegundos = Math.floor(diferenca / 1000);
                     }, 1000);
+                    this.inicio = (new Date()).getTime();
                     this.$emit("aoIniciarTarefa");
                 } else {
                     this.notificar(TipoNotificacao.FALHA, 'Descrição obrigatória', 'O campo descrição deve ser preenchido para iniciar a tarefa');

@@ -1,6 +1,6 @@
 <template>
     <BoxTarefa>
-        <div class="columns">
+        <div class="columns clicavel" @click="tarefaSelecionada">
             <div class="column is-4">
                 {{ tarefa.descricao }}
             </div>
@@ -30,6 +30,18 @@
                 type: Object as PropType<ITarefa>,
                 required: true
             }
-        }
+        },
+        methods: {
+            tarefaSelecionada() : void {
+                this.$emit('tarefa-selecionada', this.tarefa);
+            }
+        },
+        emits: ['tarefa-selecionada']
     });
 </script>
+
+<style scoped>
+    .clicavel {
+        cursor: pointer;
+    }
+</style>
