@@ -1,9 +1,28 @@
 {
   "projetos": [
     {
-      "id": "1",
+      "id": 1,
       "nome": "Alura Tracker"
     }
   ],
-  "tarefas": []
+  "tarefas": [
+    {
+      "id": 1,
+      "descricao": "Estudar VueJS",
+      "duracaoEmSegundos": 600,
+      "projeto": {
+        "id": 1,
+        "nome": "Alura Tracker"
+      }
+    },
+    {
+      "id": 1729816509777,
+      "descricao": "Estudando VueX",
+      "duracaoEmSegundos": 163,
+      "projeto": {
+        "id": 1,
+        "nome": "Alura Tracker"
+      }
+    }
+  ]
 }

@@ -30,7 +30,7 @@
         name: 'FormularioProjeto',
         props: {
           id: {
-            type: String
+            type: Number
           }  
         },
         mixins: [notificacaoMixin],

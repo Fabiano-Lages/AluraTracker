@@ -52,7 +52,7 @@
             return({
                 descricao: '',
                 executando: false,
-                idProjeto: ''
+                idProjeto: 0
             });
         },
         methods: {

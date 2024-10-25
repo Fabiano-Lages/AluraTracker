@@ -1,14 +1,15 @@
 import IProjeto from "@/interfaces/IProjeto";
 import { InjectionKey } from "vue";
 import { createStore, Store, useStore as vuexUseStore} from "vuex";
-import { Projeto, Notificacao } from "./tipo-mutacoes";
+import { Projeto, Tarefa, Notificacao } from "./tipo-mutacoes";
 import { INotificacao } from "@/interfaces/INotificacao";
-import { AcaoProjeto } from "./tipo-acoes";
+import { AcaoProjeto, AcaoTarefas } from "./tipo-acoes";
 import clienteHttp from "@/http";
-import { HttpStatusCode } from "axios";
+import ITarefa from "@/interfaces/ITarefa";
 
 interface Estado {
     projetos: IProjeto[],
+    tarefas: ITarefa[],
     notificacoes: INotificacao[]
 }
 
@@ -17,16 +18,12 @@ export const key: InjectionKey<Store<Estado>> = Symbol();
 export const store = createStore<Estado>({
     state: {
         projetos: [],
+        tarefas:[],
         notificacoes: []
     },
     mutations: {
-        [Projeto.ADICIONA](state, nomeDoProjeto: string) {
-            state.projetos.push(
-                {
-                    nome: nomeDoProjeto,
-                    id: new Date().toISOString()
-                } as IProjeto
-            );
+        [Projeto.ADICIONA](state, projeto: IProjeto) {
+            state.projetos.push(projeto);
         },
         [Projeto.ALTERA](state, projeto: IProjeto) {
             const pos = state.projetos.findIndex(prj => prj.id == projeto.id);
@@ -34,7 +31,7 @@ export const store = createStore<Estado>({
                 state.projetos[pos] = projeto;
             }
         },
-        [Projeto.EXCLUI](state, idProjeto: string) {
+        [Projeto.EXCLUI](state, idProjeto: number) {
             const pos = state.projetos.findIndex(prj => prj.id == idProjeto);
             if(pos != -1) {
                 state.projetos.splice(pos, 1);
@@ -50,7 +47,13 @@ export const store = createStore<Estado>({
             setTimeout(() => {
                 state.notificacoes.splice(state.notificacoes.findIndex(ntf => ntf.id == novaNotificacao.id), 1);
             }, 5000);
-        }
+        },
+        [Tarefa.DEFINIR_TAREFAS](state, tarefas: ITarefa[]) {
+            state.tarefas = tarefas;
+        },
+        [Tarefa.ADICIONA](state, tarefa: ITarefa) {
+            state.tarefas.push(tarefa);
+        },
     },
     actions: {
         [AcaoProjeto.OBTER_PROJETOS]({ commit }) {
@@ -62,11 +65,11 @@ export const store = createStore<Estado>({
         [AcaoProjeto.CADASTRAR_PROJETO]({ commit }, nomeDoProjeto: string) {
             return clienteHttp
                 .post('projetos', {
+                    id: new Date().getTime(),
                     nome: nomeDoProjeto
                 })
                 .then(resposta => {
-                    commit(Projeto.ADICIONA, nomeDoProjeto);
-                    return resposta.data;
+                    commit(Projeto.ADICIONA, resposta.data);
                 });
         },
         [AcaoProjeto.ALTERAR_PROJETO]({ commit }, projeto: IProjeto) {
@@ -82,6 +85,20 @@ export const store = createStore<Estado>({
                 .then(() => {
                     commit(Projeto.EXCLUI, id);
                 }) 
+        },
+        [AcaoTarefas.OBTER_TAREFAS]({ commit }) {
+            clienteHttp.get('tarefas')
+                .then(resposta => {
+                    commit(Tarefa.DEFINIR_TAREFAS, resposta.data);
+                });
+        },
+        [AcaoTarefas.CADASTRAR_TAREFA]({ commit }, tarefa: ITarefa) {
+            tarefa.id = new Date().getTime();
+            return clienteHttp
+                .post('tarefas', tarefa)
+                .then(resposta => {
+                    commit(Tarefa.ADICIONA, resposta.data);
+                });
         }
     }
 });

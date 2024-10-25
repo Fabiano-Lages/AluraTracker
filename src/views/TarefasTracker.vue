@@ -7,26 +7,32 @@
   </template>
   
   <script lang="ts">
-    import { defineComponent } from 'vue';
+    import { defineComponent, computed } from 'vue';
     import FormularioTarefa from '@/components/FormularioTarefa.vue';
     import BoxTarefa from '@/components/BoxTarefa.vue';
     import TarefaDetalhe from '@/components/TarefaDetalhe.vue';
     import ITarefa from '@/interfaces/ITarefa';
+    import {useStore} from '@/store';
+    import { AcaoProjeto, AcaoTarefas } from '@/store/tipo-acoes';
   
     export default defineComponent({
       name: 'TarefasTracker',
       components: {
         FormularioTarefa, TarefaDetalhe, BoxTarefa
       },
-      data() {
-        return({
-          listaTarefas: [] as ITarefa[]
-        });
-      },
       methods: {
           adicionaTarefa(tarefa: ITarefa) {
-            this.listaTarefas.push(tarefa);
+            this.store.dispatch(AcaoTarefas.CADASTRAR_TAREFA, tarefa);
           }
+      },
+      setup() {
+        const store = useStore();
+        store.dispatch(AcaoProjeto.OBTER_PROJETOS);
+        store.dispatch(AcaoTarefas.OBTER_TAREFAS);
+        return {
+          store,
+          listaTarefas: computed(() => store.state.tarefas)
+        }
       }
     });
   </script>

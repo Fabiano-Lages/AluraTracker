@@ -48,7 +48,7 @@
     export default defineComponent({
         name: 'ListaProjetos',
         methods: {
-            excluir(id: string) {
+            excluir(id: number) {
                 if(confirm("Confirma a exclusão do projeto?")) {
                     this.store.dispatch(AcaoProjeto.REMOVER_PROJETO, id)
                         .then(() => {
