@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed } from 'vue';
+    import { defineComponent, computed, ref } from 'vue';
     import TempoRizador from './TempoRizador.vue';
     import ITarefa from '@/interfaces/ITarefa';
     import { useStore } from '@/store';
@@ -48,34 +48,38 @@
         components: {
             TempoRizador
         },
-        data() {
-            return({
-                descricao: '',
-                executando: false,
-                idProjeto: 0
-            });
-        },
-        methods: {
-            finalizarTarefa(segundos: number) : void {
-                this.$emit('tarefaFinalizada', 
-                    {
-                        descricao: this.descricao, 
-                        duracaoEmSegundos: segundos,
-                        projeto: this.lstProjetos.find(prj => prj.id == this.idProjeto)
-                    } as ITarefa);
-                this.descricao = "";
-                this.executando = false;
-            },
-            iniciarTarefa() {
-                this.executando = true;
-            }
-        },
         emits: ['tarefaFinalizada'],
-        setup() {
+        setup(props, {emit}) {
             const store = useStore();
+
+            const lstProjetos = computed(() => store.state.projeto.projetos);
+
+            const descricao = ref("");
+            const executando = ref(false);
+            const idProjeto = ref(0);
+
+            const finalizarTarefa = (segundos: number) : void => {
+                emit('tarefaFinalizada', 
+                    {
+                        descricao: descricao.value, 
+                        duracaoEmSegundos: segundos,
+                        projeto: lstProjetos.value.find(prj => prj.id == idProjeto.value)
+                    } as ITarefa);
+                descricao.value = "";
+                executando.value = false;
+            }
+
+            const iniciarTarefa = () : void => {
+                executando.value = true;
+            }
+
             return({
-                store,
-                lstProjetos: computed(() => store.state.projetos)
+                lstProjetos,
+                descricao,
+                executando,
+                idProjeto,
+                finalizarTarefa,
+                iniciarTarefa
             });
         }
     });

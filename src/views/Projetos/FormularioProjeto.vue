@@ -20,11 +20,12 @@
 </template>
  
 <script lang="ts">
-    import { defineComponent } from 'vue';
+    import { defineComponent, ref } from 'vue';
     import { useStore } from '@/store';
     import { AcaoProjeto } from '@/store/tipo-acoes';
-    import { notificacaoMixin } from '@/mixins/notificar';
+    import useNotificar from '@/hooks/notificador';
     import { TipoNotificacao } from '@/interfaces/INotificacao';
+    import { useRouter } from 'vue-router';
 
     export default defineComponent({
         name: 'FormularioProjeto',
@@ -33,42 +34,45 @@
             type: Number
           }  
         },
-        mixins: [notificacaoMixin],
-        data() {
-            return({
-                nomeDoProjeto: "",
-            });
-        },
-        methods: {
-            salvar() {
+        setup(props) {
+            const router = useRouter();
+            const store = useStore();
+            const nomeDoProjeto = ref("");
+
+            if(props.id) {
+                const projeto = store.state.projeto.projetos.find(
+                    proj => proj.id == props.id
+                );
+                nomeDoProjeto.value = projeto?.nome || "";
+            }
+
+            const { notificar } = useNotificar();
+            
+            const salvar = () => {
                 let acao = "criado";
                 let promessa = null;
-                if(this.id) {
-                    promessa = this.store.dispatch(AcaoProjeto.ALTERAR_PROJETO, {id: this.id, nome: this.nomeDoProjeto});
+                if(props.id) {
+                    promessa = store.dispatch(AcaoProjeto.ALTERAR_PROJETO, {id: props.id, nome: nomeDoProjeto.value});
                     acao = "alterado";
                 } else {
-                    promessa = this.store.dispatch(AcaoProjeto.CADASTRAR_PROJETO, this.nomeDoProjeto);
+                    promessa = store.dispatch(AcaoProjeto.CADASTRAR_PROJETO, nomeDoProjeto.value);
                 }
 
                 if(promessa) {
                     promessa.then(() => {
-                        this.nomeDoProjeto = "";
-                        this.notificar(TipoNotificacao.SUCESSO, `Projeto ${acao}`, `Projeto ${acao} com sucesso! ;)`);
+                        nomeDoProjeto.value = "";
+                        notificar(TipoNotificacao.SUCESSO, `Projeto ${acao}`, `Projeto ${acao} com sucesso! ;)`);
         
-                        this.$router.push("/projetos");
+                        router.push("/projetos");
                     });
                 }
-            }
-        },
-        mounted() {
-            if(this.id) {
-                const projeto = this.store.state.projetos.find(proj => proj.id == this.id);
-                this.nomeDoProjeto = projeto?.nome || "";
-            }
-        },
-        setup() {
-            const store = useStore();
-            return { store };
+            };
+
+            return { 
+                store, 
+                nomeDoProjeto,
+                salvar
+            };
         }
     });
 </script>

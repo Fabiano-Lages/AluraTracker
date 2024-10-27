@@ -9,18 +9,17 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue';
+    import { defineComponent, ref } from 'vue';
     import MarcaTempo from './MarcaTempo.vue';
     import BotaoControle from './BotaoControle.vue';
-    import { TipoNotificacao } from '@/interfaces/INotificacao'; //INotificacao from '@/interfaces/INotificacao';
-    import { notificacaoMixin } from '@/mixins/notificar';
+    import { TipoNotificacao } from '@/interfaces/INotificacao';
+    import useNotificar from '@/hooks/notificador';
 
     export default defineComponent({
         name: "TempoRizador",
         components: {
             MarcaTempo, BotaoControle
         },
-        mixins: [notificacaoMixin],
         props: {
             executando:{
                 type: Boolean,
@@ -35,36 +34,43 @@
                 default: 0
             }
         },
-        data() {
-            return {
-                tempoEmSegundos: 0,
-                intervalo: 0,
-                inicio: 0
-            }  
-        },
         emits: ['aoTempoFinalizado', 'aoIniciarTarefa'],
-        methods: {
-            iniciar() {
-                if(this.descricao) {
-                    this.intervalo = setInterval(() => {
-                        const diferenca = (new Date()).getTime() - this.inicio;
-                        this.tempoEmSegundos = Math.floor(diferenca / 1000);
+        setup(props, { emit }) {
+            const { notificar } = useNotificar();
+
+            const tempoEmSegundos = ref(0);
+            const intervalo = ref(0);
+            const inicio = ref(0);
+
+            const iniciar = () : void => {
+                if(props.descricao) {
+                    intervalo.value = setInterval(() => {
+                        const diferenca = (new Date()).getTime() - inicio.value;
+                        tempoEmSegundos.value = Math.floor(diferenca / 1000);
                     }, 1000);
-                    this.inicio = (new Date()).getTime();
-                    this.$emit("aoIniciarTarefa");
+                    
+                    inicio.value = (new Date()).getTime();
+                    emit("aoIniciarTarefa");
                 } else {
-                    this.notificar(TipoNotificacao.FALHA, 'Descrição obrigatória', 'O campo descrição deve ser preenchido para iniciar a tarefa');
-                }
-            },
-            finalizar() {
-                if(this.projeto) {
-                    clearInterval(this.intervalo);
-                    this.$emit('aoTempoFinalizado', this.tempoEmSegundos);
-                    this.tempoEmSegundos = 0;
-                } else {
-                    this.notificar(TipoNotificacao.FALHA, 'Projeto obrigatória', 'O campo projeto deve ser preenchido para encerrar esta tarefa');
+                    notificar(TipoNotificacao.FALHA, 'Descrição obrigatória', 'O campo descrição deve ser preenchido para iniciar a tarefa');
                 }
             }
+
+            const finalizar = () : void => {
+                if(props.projeto) {
+                    clearInterval(intervalo.value);
+                    emit('aoTempoFinalizado', tempoEmSegundos.value);
+                    tempoEmSegundos.value = 0;
+                } else {
+                    notificar(TipoNotificacao.FALHA, 'Projeto obrigatória', 'O campo projeto deve ser preenchido para encerrar esta tarefa');
+                }
+            }
+
+            return({
+                tempoEmSegundos,
+                iniciar,
+                finalizar
+            });
         }
     });
 </script>

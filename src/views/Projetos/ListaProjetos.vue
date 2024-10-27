@@ -47,26 +47,24 @@
 
     export default defineComponent({
         name: 'ListaProjetos',
-        methods: {
-            excluir(id: number) {
-                if(confirm("Confirma a exclusão do projeto?")) {
-                    this.store.dispatch(AcaoProjeto.REMOVER_PROJETO, id)
-                        .then(() => {
-                            this.notificar(TipoNotificacao.SUCESSO, 'Projeto excluído', 'O projeto foi excluído com sucesso! ;)');
-                        }
-                    );
-                }
-            }
-        },
         setup() {
             const store = useStore();
             const { notificar } = useNotificar();
             store.dispatch(AcaoProjeto.OBTER_PROJETOS);
 
+            const excluir = (id: number) : void => {
+                if(confirm("Confirma a exclusão do projeto?")) {
+                    store.dispatch(AcaoProjeto.REMOVER_PROJETO, id)
+                        .then(() => {
+                            notificar(TipoNotificacao.SUCESSO, 'Projeto excluído', 'O projeto foi excluído com sucesso! ;)');
+                        }
+                    );
+                }
+            }
+
             return({
-                store,
-                notificar,
-                lstProjetos: computed(() => store.state.projetos)
+                excluir,
+                lstProjetos: computed(() => store.state.projeto.projetos)
             });
         }
     })
