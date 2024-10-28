@@ -22,16 +22,11 @@
 
     export default defineComponent({
         name: 'NotificacoesApp',
-        props: {
-            modoEscuro: {
-                type: Boolean,
-                required: true
-            }
-        },
         setup() {
             const store = useStore();
             return({
-                notificacoes: computed(() => store.state.notificacoes)
+                notificacoes: computed(() => store.state.notificacoes),
+                modoEscuro: computed(() => store.state.modoEscuro)
             });
         }
     });

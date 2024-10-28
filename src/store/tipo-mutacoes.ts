@@ -15,3 +15,7 @@ export const Tarefa = {
     ADICIONA : 'ADICIONA_TAREFA',
     DEFINIR_TAREFAS: 'DEFINIR_TAREFAS'
 };
+
+export const ModoEscuro = {
+    MUDAR_TEMA: "MUDAR_TEMA"
+};

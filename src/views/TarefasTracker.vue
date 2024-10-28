@@ -18,8 +18,28 @@
     />
   </div>
 
-  <ModalTarefa v-if="tarefaSelecionada" :tarefaSelecionada="tarefaSelecionada" @fechar-modal="fechaModal"
-    @novo-valor="alteraDescricao" />
+  <ModalTarefa 
+    :mostrar="tarefaSelecionada != null"
+    titulo="Editando uma tarefa"
+    @fecha-modal="fechaModal"
+    :data-theme="(modoEscuro ? 'dark' : 'light')"
+  >
+    <template v-slot:corpo>
+      <label for="txtTarefaSelecionada" class="label">Descrição</label>
+      <input 
+          type="text" 
+          id="txtTarefaSelecionada" 
+          class="input"
+          v-model="descricao"
+      />
+    </template>
+    <template v-slot:rodape>
+      <div class="buttons">
+          <button class="button is-success" @click="alteraDescricao">Salvar alterações</button>
+          <button class="button" @click="fechaModal">Cancelar</button>
+      </div>
+    </template>
+  </ModalTarefa>
 </template>
 
 <script lang="ts">
@@ -41,11 +61,11 @@ export default defineComponent({
     const store = useStore();
 
     const filtro = ref("");
+    const tarefaSelecionada = ref<ITarefa | null>(null);
+    const descricao = ref("");
 
     store.dispatch(AcaoProjeto.OBTER_PROJETOS);
     store.dispatch(AcaoTarefas.OBTER_TAREFAS);
-
-    const tarefaSelecionada = ref<ITarefa | null>(null);
 
     const adicionaTarefa = (tarefa: ITarefa): void => {
       store.dispatch(AcaoTarefas.CADASTRAR_TAREFA, tarefa);
@@ -53,15 +73,18 @@ export default defineComponent({
 
     const tarefaClicada = (tarefa: ITarefa): void => {
       tarefaSelecionada.value = tarefa;
+      descricao.value = tarefa.descricao;
     }
 
     const fechaModal = (): void => {
       tarefaSelecionada.value = null;
+      descricao.value = "";
     }
 
-    const alteraDescricao = (descricao: string): void => {
+    const alteraDescricao = (): void => {
       if (tarefaSelecionada.value) {
-        store.dispatch(AcaoTarefas.ALTERAR_TAREFA, { ...tarefaSelecionada.value, descricao })
+        tarefaSelecionada.value.descricao = descricao.value;
+        store.dispatch(AcaoTarefas.ALTERAR_TAREFA, tarefaSelecionada.value )
           .then(() => fechaModal());
       }
     }
@@ -73,11 +96,13 @@ export default defineComponent({
     return {
       tarefaSelecionada,
       listaTarefas: computed(() => store.state.tarefa.tarefas),
+      modoEscuro: computed(() => store.state.modoEscuro),
       adicionaTarefa,
       tarefaClicada,
       fechaModal,
       alteraDescricao,
-      filtro
+      filtro,
+      descricao
     }
   }
 });

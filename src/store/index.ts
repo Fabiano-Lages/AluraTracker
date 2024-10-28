@@ -1,6 +1,6 @@
 import { InjectionKey } from "vue";
 import { createStore, Store, useStore as vuexUseStore} from "vuex";
-import { Notificacao } from "./tipo-mutacoes";
+import { Notificacao, ModoEscuro } from "./tipo-mutacoes";
 import { INotificacao } from "@/interfaces/INotificacao";
 import { EstadoProjeto, projeto } from "./modulos/projeto";
 import { EstadoTarefa, tarefa } from "./modulos/tarefa";
@@ -8,7 +8,8 @@ import { EstadoTarefa, tarefa } from "./modulos/tarefa";
 export interface Estado {
     notificacoes: INotificacao[],
     projeto: EstadoProjeto,
-    tarefa: EstadoTarefa
+    tarefa: EstadoTarefa,
+    modoEscuro: boolean
 }
 
 export const key: InjectionKey<Store<Estado>> = Symbol();
@@ -21,7 +22,8 @@ export const store = createStore<Estado>({
         },
         tarefa: {
             tarefas: []
-        }
+        },
+        modoEscuro: false
     },
     mutations: {
         [Notificacao.NOTIFICAR](state, novaNotificacao: INotificacao) {
@@ -32,8 +34,9 @@ export const store = createStore<Estado>({
                 state.notificacoes.splice(state.notificacoes.findIndex(ntf => ntf.id == novaNotificacao.id), 1);
             }, 5000);
         },
-    },
-    actions: {
+        [ModoEscuro.MUDAR_TEMA](state, temaEscuro : boolean) {
+            state.modoEscuro = temaEscuro;
+        }
     },
     modules: {
         projeto,
@@ -42,5 +45,5 @@ export const store = createStore<Estado>({
 });
 
 export function useStore(): Store<Estado> {
-    return vuexUseStore(key);
+    return vuexUseStore(key) || store;
 }

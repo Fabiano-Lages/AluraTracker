@@ -4,7 +4,7 @@
             <img src="@/assets/logo.png" alt="Logo do Alura Tracker">
         </h1>
         <button class="button" @click="alterarTema">
-            {{ acaoBotao }} modo escuro
+            {{ (modoEscuro ? 'Desativar' : 'Ativar') }} modo escuro
         </button>
         <nav class="panel mt-5">
             <ul>
@@ -26,22 +26,24 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue';
+    import { computed, defineComponent } from 'vue';
+    import { useStore } from '@/store';
+    import { ModoEscuro } from '@/store/tipo-mutacoes';
+
     export default defineComponent({
         name: 'BarraLateral',
-        methods: {
-            alterarTema() {
-                this.$emit('alterarTema');
+        setup() {
+            const store = useStore();
+            const modoEscuro = computed(() => store.state.modoEscuro);
+
+            const alterarTema = () : void => {
+                store.commit(ModoEscuro.MUDAR_TEMA, !modoEscuro.value)
             }
-        },
-        props: {
-            modoEscuro: Boolean
-        },
-        emits: ['alterarTema'],
-        computed: {
-            acaoBotao() : string {
-                return(this.modoEscuro ? 'Desativar' : 'Ativar');
-            }
+
+            return({
+                alterarTema,
+                modoEscuro
+            });
         }
     });
 </script>

@@ -39,7 +39,7 @@
     },
     {
       "id": "1729864037706",
-      "descricao": "Outro teste",
+      "descricao": "Testando o modal separado",
       "duracaoEmSegundos": 10,
       "projeto": {
         "id": "1",
@@ -48,7 +48,7 @@
     },
     {
       "id": "1729868662758",
-      "descricao": "Testando",
+      "descricao": "Testando após ajustar o dakt theme",
       "duracaoEmSegundos": 1337,
       "projeto": {
         "id": "1",

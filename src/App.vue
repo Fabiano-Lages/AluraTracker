@@ -1,39 +1,30 @@
 <template>
   <main class="columns is-gapless is-multiline" :class="{'modo-escuro': modoEscuro}">
     <div class="column is-one-quarter">
-      <BarraLateral @alterarTema="alterarTema" :modoEscuro="modoEscuro" />
+      <BarraLateral />
     </div>
     <div class="column is-three-quarter conteudo">
-      <NotificacoesApp :modoEscuro="modoEscuro" />
+      <NotificacoesApp />
       <RouterView />
     </div>
   </main>
 </template>
 
 <script lang="ts">
-  import { defineComponent } from 'vue';
+  import { computed, defineComponent } from 'vue';
   import BarraLateral from './components/BarraLateral.vue';
-  import ITarefa from './interfaces/ITarefa';
   import NotificacoesApp from './components/NotificacoesApp.vue';
+  import { useStore } from './store';
 
   export default defineComponent({
     name: 'App',
     components: {
       BarraLateral, NotificacoesApp
     },
-    data() {
+    setup() {
       return({
-        listaTarefas: [] as ITarefa[],
-        modoEscuro: false
+        modoEscuro: computed(() => useStore().state.modoEscuro)
       });
-    },
-    methods: {
-        adicionaTarefa(tarefa: ITarefa) {
-          this.listaTarefas.push(tarefa);
-        },
-        alterarTema() {
-          this.modoEscuro = !this.modoEscuro;
-        }
     }
   });
 </script>
